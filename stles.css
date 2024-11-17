@@ -1,0 +1,41 @@
+body.light-mode {
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+body.dark-mode {
+    background-color: #343a40;
+    color: white;
+}
+
+body.dyslexia-mode {
+    font-family: 'OpenDyslexic', Arial, sans-serif;
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+}
+
+.navbar {
+    transition: background-color 0.3s;
+}
+
+.navbar.light-mode {
+    background-color: #f8f9fa;
+}
+
+.navbar.dark-mode {
+    background-color: #212529;
+}
+
+.navbar-brand img {
+    height: 40px;
+}
+
+.footer {
+    background-color: #f8f9fa;
+    padding: 10px 0;
+}
+
+.footer.dark-mode {
+    background-color: #212529;
+    color: white;
+}
