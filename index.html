@@ -364,6 +364,39 @@
             dyslexiaToggleBtn.textContent = 'Enable Accessibility Mode';
             localStorage.setItem('dyslexiaMode', 'false');
         }
+        <!-- Add this script inside your signup page -->
+<script>
+    document.getElementById('college-signup-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        // Get form data
+        const collegeName = document.getElementById('college-name').value;
+        const leaderName = document.getElementById('leader-name').value;
+        const leaderEmail = document.getElementById('leader-email').value;
+        const collegeAddress = document.getElementById('college-address').value;
+
+        // Create a college object
+        const college = {
+            name: collegeName,
+            leader: leaderName,
+            email: leaderEmail,
+            address: collegeAddress,
+        };
+
+        // Get existing colleges from localStorage or initialize an empty array
+        const colleges = JSON.parse(localStorage.getItem('colleges')) || [];
+        
+        // Add new college
+        colleges.push(college);
+
+        // Save back to localStorage
+        localStorage.setItem('colleges', JSON.stringify(colleges));
+
+        alert('College signed up successfully!');
+        this.reset(); // Reset the form
+    });
+</script>
+
     </script>
 </body>
 </html>
