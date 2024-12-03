@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Signed Colleges</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Colleges That Signed Up</h1>
-        <ul id="college-list" class="list-group"></ul>
-    </div>
     <style>
-        body {
+        body.light-mode {
             background-color: #f5f5f5;
             color: #6b6b6b;
+        }
+
+        body.dark-mode {
+            background-color: #121212;
+            color: #f5f5f5;
         }
 
         .navbar {
@@ -27,8 +26,13 @@
 
         .section-title {
             color: #00818A;
-            margin-top: 40px;
+            margin-top: 20px;
             margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .dark-mode .section-title {
+            color: #00D4D8;
         }
 
         footer {
@@ -40,20 +44,19 @@
     </style>
 </head>
 <body class="light-mode">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" id="logo" href="#">
+            <a class="navbar-brand" id="logo" href="index.html">
                 <img src="https://www.aoc.co.uk/skin/aoc-logo.svg" alt="AoC Logo" style="height: 55px; background-color: white; padding: 5px; border-radius: 5px;">
             </a>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
+                        <a class="nav-link" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="contact.html">Contact Us</a>
@@ -64,17 +67,45 @@
                     <li class="nav-item">
                         <a class="nav-link" href="signed_colleges.html">Signed Colleges</a>
                     </li>
-  
-                <button id="theme-toggle" class="btn btn-outline-primary ms-2">Switch to Dark Mode</button>
-                <button id="dyslexia-toggle" class="btn btn-outline-warning ms-2">Accessibility Mode</button>
+                </ul>
+                <button id="theme-toggle" class="btn btn-outline-light ms-2">Switch to Dark Mode</button>
             </div>
         </div>
     </nav>
+
+    <!-- Title -->
+    <h1 class="section-title">Colleges That Signed Up</h1>
+
+    <!-- College List -->
+    <div class="container">
+        <ul id="college-list" class="list-group"></ul>
+    </div>
+
+    <!-- JavaScript -->
     <script>
+        // Theme toggle logic
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Initialize theme based on localStorage
+        const currentTheme = localStorage.getItem('theme') || 'light-mode';
+        body.className = currentTheme;
+        themeToggle.textContent = currentTheme === 'dark-mode' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+
+        themeToggle.addEventListener('click', () => {
+            if (body.classList.contains('light-mode')) {
+                body.classList.replace('light-mode', 'dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+                themeToggle.textContent = 'Switch to Light Mode';
+            } else {
+                body.classList.replace('dark-mode', 'light-mode');
+                localStorage.setItem('theme', 'light-mode');
+                themeToggle.textContent = 'Switch to Dark Mode';
+            }
+        });
+
         // Load colleges from localStorage
         const colleges = JSON.parse(localStorage.getItem('colleges')) || [];
-
-        // Reference to the list
         const collegeList = document.getElementById('college-list');
 
         // Render each college
@@ -90,5 +121,6 @@
             collegeList.appendChild(listItem);
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoO2AG5A1w7a8K2iDiocw6T9wr23dghZ7GIl2k1FjEG6dh/"></script>
 </body>
 </html>
