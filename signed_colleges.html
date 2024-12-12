@@ -133,10 +133,10 @@
     </style>
 </head>
 <body class="light-mode">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg">
+    <!-- Navbar Section -->
+    <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container-fluid">
-            <a class="navbar-brand" id="logo" href="index.html">
+            <a class="navbar-brand" href="#">
                 <img src="https://www.aoc.co.uk/skin/aoc-logo.svg" alt="AoC Logo" style="height: 55px; background-color: white; padding: 5px; border-radius: 5px;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -148,7 +148,7 @@
                         <a class="nav-link" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="contact.html">Contact Us</a>
+                        <a class="nav-link active" href="contact.html">Contact Us</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="charter.html">Charter Download</a>
@@ -156,12 +156,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="signed_colleges.html">Signed Colleges</a>
                     </li>
+                    <button id="theme-toggle" class="btn btn-outline-light ms-2">Switch to Dark Mode</button>
+                    <button id="dyslexia-toggle" class="btn btn-outline-warning ms-2">Accessibility Mode</button>
                 </ul>
-                <button id="theme-toggle" class="btn btn-outline-light ms-2">Switch to Dark Mode</button>
             </div>
         </div>
     </nav>
-
     <!-- Title -->
     <h1 class="section-title">Colleges That Signed Up</h1>
 
@@ -171,45 +171,99 @@
     </div>
 
     <!-- JavaScript -->
+       <!-- Footer Section -->
+    <footer class="footer text-center p-4 mt-5">
+        <p>&copy; 2024 Association of Colleges. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <!-- Dark Mode and Dyslexia Mode Script -->
     <script>
-        // Theme toggle logic
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const dyslexiaToggleBtn = document.getElementById('dyslexia-toggle');
+        const bodyElement = document.body;
+        const navbarElement = document.querySelector('.navbar');
+        const footerElement = document.querySelector('.footer');
+        const sectionTitles = document.querySelectorAll('.section-title');
+        const formLabels = document.querySelectorAll('.form-label');
+        const primaryButtons = document.querySelectorAll('.btn-primary');
+        const navbarBrand = document.getElementById('logo');
 
-        // Initialize theme based on localStorage
-        const currentTheme = localStorage.getItem('theme') || 'light-mode';
-        body.className = currentTheme;
-        themeToggle.textContent = currentTheme === 'dark-mode' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        // Load theme from localStorage
+        if (localStorage.getItem('theme') === 'dark') {
+            enableDarkMode();
+        }
 
-        themeToggle.addEventListener('click', () => {
-            if (body.classList.contains('light-mode')) {
-                body.classList.replace('light-mode', 'dark-mode');
-                localStorage.setItem('theme', 'dark-mode');
-                themeToggle.textContent = 'Switch to Light Mode';
+        if (localStorage.getItem('dyslexiaMode') === 'true') {
+            enableDyslexiaMode();
+        }
+
+        // Dark Mode Toggle
+        themeToggleBtn.addEventListener('click', function () {
+            if (bodyElement.classList.contains('dark-mode')) {
+                disableDarkMode();
             } else {
-                body.classList.replace('dark-mode', 'light-mode');
-                localStorage.setItem('theme', 'light-mode');
-                themeToggle.textContent = 'Switch to Dark Mode';
+                enableDarkMode();
             }
         });
 
-        // Load colleges from localStorage
-        const colleges = JSON.parse(localStorage.getItem('colleges')) || [];
-        const collegeList = document.getElementById('college-list');
+        function enableDarkMode() {
+            bodyElement.classList.add('dark-mode');
+            navbarElement.classList.add('dark-mode');
+            footerElement.classList.add('dark-mode');
+            sectionTitles.forEach(title => title.classList.add('dark-mode'));
+            formLabels.forEach(label => label.classList.add('dark-mode'));
+            primaryButtons.forEach(button => button.classList.add('dark-mode'));
+            navbarBrand.classList.remove('white-background');
+            navbarBrand.classList.add('red-background');
+            themeToggleBtn.textContent = 'Switch to Light Mode';
+            localStorage.setItem('theme', 'dark');
+        }
 
-        // Render each college
-        colleges.forEach(college => {
-            const listItem = document.createElement('li');
-            listItem.className = 'list-group-item';
-            listItem.innerHTML = `
-                <strong>${college.name}</strong><br>
-                Leader: ${college.leader}<br>
-                Email: ${college.email}<br>
-                Address: ${college.address}
-            `;
-            collegeList.appendChild(listItem);
+        function disableDarkMode() {
+            bodyElement.classList.remove('dark-mode');
+            navbarElement.classList.remove('dark-mode');
+            footerElement.classList.remove('dark-mode');
+            sectionTitles.forEach(title => title.classList.remove('dark-mode'));
+            formLabels.forEach(label => label.classList.remove('dark-mode'));
+            primaryButtons.forEach(button => button.classList.remove('dark-mode'));
+            navbarBrand.classList.remove('red-background');
+            navbarBrand.classList.add('white-background');
+            themeToggleBtn.textContent = 'Switch to Dark Mode';
+            localStorage.setItem('theme', 'light');
+        }
+
+        // Dyslexia Mode Toggle
+        dyslexiaToggleBtn.addEventListener('click', function () {
+            if (bodyElement.classList.contains('dyslexia-mode')) {
+                disableDyslexiaMode();
+            } else {
+                enableDyslexiaMode();
+            }
         });
+
+        function enableDyslexiaMode() {
+            bodyElement.classList.add('dyslexia-mode');
+            navbarElement.classList.add('dyslexia-mode');
+            footerElement.classList.add('dyslexia-mode');
+            sectionTitles.forEach(title => title.classList.add('dyslexia-mode'));
+            formLabels.forEach(label => label.classList.add('dyslexia-mode'));
+            primaryButtons.forEach(button => button.classList.add('dyslexia-mode'));
+            dyslexiaToggleBtn.textContent = 'Disable Accessibility Mode';
+            localStorage.setItem('dyslexiaMode', 'true');
+        }
+
+        function disableDyslexiaMode() {
+            bodyElement.classList.remove('dyslexia-mode');
+            navbarElement.classList.remove('dyslexia-mode');
+            footerElement.classList.remove('dyslexia-mode');
+            sectionTitles.forEach(title => title.classList.remove('dyslexia-mode'));
+            formLabels.forEach(label => label.classList.remove('dyslexia-mode'));
+            primaryButtons.forEach(button => button.classList.remove('dyslexia-mode'));
+            dyslexiaToggleBtn.textContent = 'Enable Accessibility Mode';
+            localStorage.setItem('dyslexiaMode', 'false');
+        }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoO2AG5A1w7a8K2iDiocw6T9wr23dghZ7GIl2k1FjEG6dh/"></script>
-</body>
 </html>
