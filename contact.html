@@ -1,3 +1,4 @@
+<!--make it so that the footer is at the bottom of the webpage -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +12,10 @@
             background-color: #f5f5f5;
             color: #6b6b6b;
         }
-
+        .btn-danger.dark-mode {
+            background-color: #ff5555;
+            border-color: #ff4444;
+        }
         .navbar {
             background-color: #00818A;
         }
@@ -31,10 +35,6 @@
             margin-bottom: 20px;
         }
 
-        h2.section-title {
-            color: #00818A; /* Default title color */
-        }
-
         .btn-primary {
             background-color: #ece6f5;
             border-color: #dddddd;
@@ -49,9 +49,23 @@
             color: #6b6b6b;
         }
 
+        /* Light Mode Button */
+        .btn-primary {
+           background-color: #ff4d4d;  /* Red background */
+           border-color: #e60000;      /* Red border */
+           color: white;               /* White text */
+          
+        }
+        
+        .btn-primary:hover {
+          background-color: #ff6666;  /* Lighter red on hover */
+          border-color: #e60000;      /* Red border on hover */
+          
+        }
+
         /* Dark mode styles */
         body.dark-mode {
-            background-color: #006780; /* Deep marine */
+            background-color: #006780;/*Deep marine*/
             color: #f5f5f5;
         }
 
@@ -65,11 +79,7 @@
         }
 
         .section-title.dark-mode {
-            color: white; /* Set the color to white in dark mode */
-        }
-
-        h2.section-title.dark-mode {
-            color: white; /* Ensure the title text is white in dark mode */
+            color: #f8ebed;
         }
 
         .form-label.dark-mode {
@@ -80,6 +90,18 @@
             background-color: #fafafa;
             border-color: #f5edf0;
         }
+        /* Dark Mode Button */
+        .btn-primary.dark-mode {
+          background-color: #ff4d4d;  /* Red background */
+          border-color: #e60000;      /* Red border */
+          color: white;               /* White text */
+          }
+          
+          .btn-primary.dark-mode:hover {
+            background-color: #ff6666;  /* Lighter red on hover */
+            border-color: #e60000;      /* Red border on hover */
+            
+          }
 
         /* Dyslexia-friendly mode styles */
         body.dyslexia-mode {
@@ -111,6 +133,7 @@
         }
     </style>
 </head>
+
 
 <body class="light-mode">
     <!-- Navbar Section -->
@@ -162,52 +185,99 @@
         </table>
     </div>
 
-    <!-- Footer Section -->
-    <footer class="footer text-center mt-5">
-        <div class="container">
-            <p>&copy; 2024 AoC. Registered number 3216271</p>
-        </div>
+       <!-- Footer Section -->
+    <footer class="footer text-center p-4 mt-5">
+        <p>&copy; 2024 Association of Colleges. All rights reserved.</p>
     </footer>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-    <!-- Theme Toggle Script -->
+    <!-- Dark Mode and Dyslexia Mode Script -->
     <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const dyslexiaToggle = document.getElementById('dyslexia-toggle');
-        const body = document.body;
-        const navbar = document.querySelector('.navbar');
-        const footer = document.querySelector('.footer');
-        const savedTheme = localStorage.getItem('theme');
-        const savedMode = localStorage.getItem('mode');
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const dyslexiaToggleBtn = document.getElementById('dyslexia-toggle');
+        const bodyElement = document.body;
+        const navbarElement = document.querySelector('.navbar');
+        const footerElement = document.querySelector('.footer');
+        const sectionTitles = document.querySelectorAll('.section-title');
+        const formLabels = document.querySelectorAll('.form-label');
+        const primaryButtons = document.querySelectorAll('.btn-primary');
+        const navbarBrand = document.getElementById('logo');
 
-        if (savedTheme === 'dark') toggleTheme();
-        if (savedMode === 'dyslexia') toggleDyslexiaMode();
-
-        themeToggle.addEventListener('click', () => {
-            toggleTheme();
-            localStorage.setItem('theme', body.classList.contains('dark-mode') ? 'dark' : 'light');
-        });
-
-        dyslexiaToggle.addEventListener('click', () => {
-            toggleDyslexiaMode();
-            localStorage.setItem('mode', body.classList.contains('dyslexia-mode') ? 'dyslexia' : 'standard');
-        });
-
-        function toggleTheme() {
-            body.classList.toggle('dark-mode');
-            navbar.classList.toggle('dark-mode');
-            footer.classList.toggle('dark-mode');
-            document.querySelectorAll('.section-title').forEach(title => title.classList.toggle('dark-mode'));
-            themeToggle.textContent = body.classList.contains('dark-mode') ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        // Load theme from localStorage
+        if (localStorage.getItem('theme') === 'dark') {
+            enableDarkMode();
         }
 
-        function toggleDyslexiaMode() {
-            body.classList.toggle('dyslexia-mode');
-            navbar.classList.toggle('dyslexia-mode');
-            footer.classList.toggle('dyslexia-mode');
-            dyslexiaToggle.textContent = body.classList.contains('dyslexia-mode') ? 'Switch to Standard Mode' : 'Accessibility Mode';
+        if (localStorage.getItem('dyslexiaMode') === 'true') {
+            enableDyslexiaMode();
+        }
+
+        // Dark Mode Toggle
+        themeToggleBtn.addEventListener('click', function () {
+            if (bodyElement.classList.contains('dark-mode')) {
+                disableDarkMode();
+            } else {
+                enableDarkMode();
+            }
+        });
+
+        function enableDarkMode() {
+            bodyElement.classList.add('dark-mode');
+            navbarElement.classList.add('dark-mode');
+            footerElement.classList.add('dark-mode');
+            sectionTitles.forEach(title => title.classList.add('dark-mode'));
+            formLabels.forEach(label => label.classList.add('dark-mode'));
+            primaryButtons.forEach(button => button.classList.add('dark-mode'));
+            navbarBrand.classList.remove('white-background');
+            navbarBrand.classList.add('red-background');
+            themeToggleBtn.textContent = 'Switch to Light Mode';
+            localStorage.setItem('theme', 'dark');
+        }
+
+        function disableDarkMode() {
+            bodyElement.classList.remove('dark-mode');
+            navbarElement.classList.remove('dark-mode');
+            footerElement.classList.remove('dark-mode');
+            sectionTitles.forEach(title => title.classList.remove('dark-mode'));
+            formLabels.forEach(label => label.classList.remove('dark-mode'));
+            primaryButtons.forEach(button => button.classList.remove('dark-mode'));
+            navbarBrand.classList.remove('red-background');
+            navbarBrand.classList.add('white-background');
+            themeToggleBtn.textContent = 'Switch to Dark Mode';
+            localStorage.setItem('theme', 'light');
+        }
+
+        // Dyslexia Mode Toggle
+        dyslexiaToggleBtn.addEventListener('click', function () {
+            if (bodyElement.classList.contains('dyslexia-mode')) {
+                disableDyslexiaMode();
+            } else {
+                enableDyslexiaMode();
+            }
+        });
+
+        function enableDyslexiaMode() {
+            bodyElement.classList.add('dyslexia-mode');
+            navbarElement.classList.add('dyslexia-mode');
+            footerElement.classList.add('dyslexia-mode');
+            sectionTitles.forEach(title => title.classList.add('dyslexia-mode'));
+            formLabels.forEach(label => label.classList.add('dyslexia-mode'));
+            primaryButtons.forEach(button => button.classList.add('dyslexia-mode'));
+            dyslexiaToggleBtn.textContent = 'Disable Accessibility Mode';
+            localStorage.setItem('dyslexiaMode', 'true');
+        }
+
+        function disableDyslexiaMode() {
+            bodyElement.classList.remove('dyslexia-mode');
+            navbarElement.classList.remove('dyslexia-mode');
+            footerElement.classList.remove('dyslexia-mode');
+            sectionTitles.forEach(title => title.classList.remove('dyslexia-mode'));
+            formLabels.forEach(label => label.classList.remove('dyslexia-mode'));
+            primaryButtons.forEach(button => button.classList.remove('dyslexia-mode'));
+            dyslexiaToggleBtn.textContent = 'Enable Accessibility Mode';
+            localStorage.setItem('dyslexiaMode', 'false');
         }
     </script>
 </body>
