@@ -1,54 +1,44 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #efefef;
-            color: #6b6b6b;
+            background-color: #f8f9fa;
         }
 
         .navbar {
-            background-color: #00818A;
+            background-color: #007bff;
         }
 
-        .navbar-brand {
-            color: white;
-        }
-
-        .footer {
-            background-color: #00818A;
+        .navbar-brand, .nav-link {
             color: white;
         }
 
         .section-title {
-            color: #00818A;
+            color: #007bff;
             margin-top: 40px;
             margin-bottom: 20px;
         }
 
         .btn-primary {
-            background-color: #ff4d4d;
-            border-color: #e60000;
-            color: white;
+            background-color: #007bff;
+            border: none;
         }
 
         .btn-primary:hover {
-            background-color: #ff6666;
-            border-color: #e60000;
+            background-color: #0056b3;
         }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">
-                <img src="https://www.aoc.co.uk/skin/aoc-logo.svg" alt="AoC Logo" style="height: 55px; background-color: white; padding: 5px; border-radius: 5px;">
-            </a>
+            <a class="navbar-brand" href="#">AoC Admin Dashboard</a>
             <button id="logout-btn" class="btn btn-danger ms-auto">Logout</button>
         </div>
     </nav>
@@ -56,119 +46,121 @@
     <!-- Dashboard Content -->
     <div class="container mt-5">
         <h1 class="section-title">Admin Dashboard</h1>
+        <p>Manage college sign-ups and download data.</p>
+        <button id="download-csv" class="btn btn-primary">Download Signups as CSV</button>
+        <button id="download-db" class="btn btn-primary ms-2">Download Database</button>
+        <table class="table table-bordered table-striped mt-4">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>College Name</th>
+                    <th>Principal/Chief Executive Name</th>
+                    <th>Email</th>
+                    <th>Contact Type</th>
+                    <th>Contact Value</th>
+                    <th>Supports Charter</th>
+                    <th>Public Support</th>
+                </tr>
+            </thead>
+            <tbody id="signup-data">
+                <!-- Data will be dynamically inserted here -->
+            </tbody>
+        </table>
     </div>
+
+    <!-- Footer -->
+    <footer class="text-center p-4 bg-light mt-5">
+        <p>&copy; 2024 Association of Colleges. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SQL.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
 
     <script>
         let db;
-        const csvData = [];
 
         // Initialize SQL.js
         initSqlJs({ locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${filename}` })
             .then(SQL => {
                 db = new SQL.Database();
-                db.run(`
-                    CREATE TABLE colleges (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        college_name TEXT,
-                        leader_name TEXT,
-                        leader_email TEXT,
-                        contact_type TEXT,
-                        contact_value TEXT,
-                        supports_charter BOOLEAN,
-                        public_support BOOLEAN
-                    );
-                `);
+
+                // Restore database from localStorage
+                const storedDb = localStorage.getItem('collegeDb');
+                if (storedDb) {
+                    db = new SQL.Database(new Uint8Array(JSON.parse(storedDb)));
+                }
+
+                loadTableData();
             });
 
-        // Handle form submission
-        document.getElementById("signup-form").addEventListener("submit", event => {
-            event.preventDefault();
-
-            const collegeName = document.getElementById("college-name").value;
-            const leaderName = document.getElementById("leader-name").value;
-            const leaderEmail = document.getElementById("leader-email").value;
-            const contactType = document.getElementById("contact-type").value;
-            const contactValue = document.getElementById("contact-value").value;
-            const supportsCharter = document.getElementById("agreement").checked;
-            const publicSupport = document.getElementById("public-agreement").checked;
-
-            // Save to SQL.js
-            db.run(`
-                INSERT INTO colleges (college_name, leader_name, leader_email, contact_type, contact_value, supports_charter, public_support)
-                VALUES (?, ?, ?, ?, ?, ?, ?);
-            `, [collegeName, leaderName, leaderEmail, contactType, contactValue, supportsCharter, publicSupport]);
-
-            // Add to CSV data
-            csvData.push({
-                "College Name": collegeName,
-                "Principal/Chief Executive Name": leaderName,
-                "Principal/Chief Executive Email": leaderEmail,
-                "Contact Type": contactType,
-                "Contact Value": contactValue,
-                "Supports Charter": supportsCharter,
-                "Public Support": publicSupport
-            });
-
-            // Enable download buttons
-            document.getElementById("download-csv").disabled = false;
-            document.getElementById("download-db").disabled = false;
-
-            // Show Thank You Modal
-            const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
-            thankYouModal.show();
-
-            event.target.reset();
+        // Logout Functionality
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            localStorage.removeItem("isLoggedIn");
+            window.location.href = "admin_login.html";
         });
+
+        // Load Table Data
+        function loadTableData() {
+            const results = db.exec("SELECT * FROM colleges");
+            const tbody = document.getElementById("signup-data");
+
+            if (results.length > 0) {
+                const rows = results[0].values.map(row => `
+                    <tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                        <td>${row[4]}</td>
+                        <td>${row[5]}</td>
+                        <td>${row[6] ? "Yes" : "No"}</td>
+                        <td>${row[7] ? "Yes" : "No"}</td>
+                    </tr>
+                `).join("");
+                tbody.innerHTML = rows;
+            } else {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center">No sign-ups yet.</td></tr>`;
+            }
+        }
 
         // Download CSV
         document.getElementById("download-csv").addEventListener("click", () => {
-            const csvContent = [
-                Object.keys(csvData[0]).join(","), // Header row
-                ...csvData.map(row => Object.values(row).map(value => `"${value}"`).join(","))
-            ].join("\n");
+            const results = db.exec("SELECT * FROM colleges");
+            if (results.length === 0) return alert("No data found!");
 
-            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const csvRows = [];
+            const headers = results[0].columns.join(",");
+            csvRows.push(headers);
+
+            for (const row of results[0].values) {
+                csvRows.push(row.join(","));
+            }
+
+            const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "signed_colleges.csv";
+            link.href = url;
+            link.download = "colleges.csv";
             link.click();
         });
 
-        // Download SQL.js database
+        // Download Database
         document.getElementById("download-db").addEventListener("click", () => {
             const binaryArray = db.export();
             const blob = new Blob([binaryArray], { type: "application/octet-stream" });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "signed_colleges.sqlite";
+            link.href = url;
+            link.download = "colleges.db";
             link.click();
         });
-    </script>
 
-    <button id="download-csv" class="btn btn-secondary mt-3" disabled>Download CSV</button>
-    <button id="download-db" class="btn btn-secondary mt-3" disabled>Download Database</button>
-    
-    <!-- Footer -->
-    <footer class="footer text-center p-4 mt-5">
-        <p>&copy; 2024 Association of Colleges. All rights reserved.</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-
-    <!-- Logout Script -->
-    <script>
-        const logoutBtn = document.getElementById('logout-btn');
-
-        logoutBtn.addEventListener('click', function () {
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = 'index.html'; // Redirect to login page
-        });
-
-        // Check if the user is logged in
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = 'index.html'; // Redirect to login page if not logged in
+        // Ensure Admin is Logged In
+        if (localStorage.getItem("isLoggedIn") !== "true") {
+            window.location.href = "admin_login.html";
         }
     </script>
-  </body>
+</body>
 </html>
