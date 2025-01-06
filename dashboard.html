@@ -135,10 +135,11 @@
             csvRows.push(headers);
 
             for (const row of results[0].values) {
-                csvRows.push(row.join(","));
+                csvRows.push(row.map(value => `"${value}"`).join(","));
             }
 
-            const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+            const csvContent = csvRows.join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
