@@ -136,6 +136,49 @@
             link.download = "colleges.db";
             link.click();
         });
+      // Download Database as a CSV File
+document.getElementById("download-db").addEventListener("click", () => {
+    const csvRows = [];
+
+    // Get all table names from the database
+    const tableResult = db.exec(`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`);
+    if (!tableResult.length || !tableResult[0].values.length) {
+        return alert("No tables found in the database!");
+    }
+
+    const tableNames = tableResult[0].values.flat(); // Extract table names from query result
+
+    // Iterate through each table and export data as CSV
+    tableNames.forEach((tableName) => {
+        csvRows.push(`\n-- Table: ${tableName} --`); // Add table separator in CSV
+        const tableData = db.exec(`SELECT * FROM ${tableName};`)[0];
+
+        if (tableData) {
+            // Add headers for the table
+            const headers = tableData.columns.join(",");
+            csvRows.push(headers);
+
+            // Add rows for the table
+            tableData.values.forEach((row) => {
+                csvRows.push(row.join(","));
+            });
+        } else {
+            csvRows.push("No data found in this table.");
+        }
+    });
+
+    // Create CSV file and trigger download
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "database.csv";
+    link.click();
+
+    // Clean up URL object
+    URL.revokeObjectURL(url);
+});
+
 
         // Ensure Admin is Logged In
         if (localStorage.getItem("isLoggedIn") !== "true") {
