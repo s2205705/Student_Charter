@@ -301,7 +301,18 @@
         </div>
     </div>
 
-    <script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+
+    <!-- Footer Section -->
+    <footer class="footer text-center p-4 mt-5">
+        <p>&copy; 2024 Association of Colleges. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script>
         let db;
         const csvData = [];
         // Initialize SQL.js
@@ -351,7 +362,7 @@
             }
 
        // Add to CSV data
-     csvData.push({
+      csvData.push({
         "College Name": collegeName,
         "Principal/Chief Executive Name": leaderName,
         "Principal/Chief Executive Email": leaderEmail,
@@ -359,38 +370,23 @@
         "Contact Value": contactValue,
         "Supports Charter": supportsCharter,
         "Public Support": publicSupport
-    });
+     });
 
-    console.log("CSV Data:", csvData);
+     console.log("CSV Data:", csvData);
 
     // Show Thank You Modal
     const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
     thankYouModal.show();
 
     event.target.reset();
-});
+    });
             // Show Thank You Modal
             const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
             thankYouModal.show();
 
             event.target.reset();
-        });
-    </script>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  
-
-    <!-- Footer Section -->
-    <footer class="footer text-center p-4 mt-5">
-        <p>&copy; 2024 Association of Colleges. All rights reserved.</p>
-    </footer>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-
+    });
     <!-- Dark Mode and Dyslexia Mode Script -->
-    <script>
         const themeToggleBtn = document.getElementById('theme-toggle');
         const dyslexiaToggleBtn = document.getElementById('dyslexia-toggle');
         const bodyElement = document.body;
