@@ -299,6 +299,11 @@
                 </div>
             </div>
         </div>
+        // Show Thank You Modal
+        const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
+        thankYouModal.show();
+        event.target.reset();
+        });
     </div>
 
     <!-- Bootstrap JS -->
@@ -373,13 +378,7 @@
      });
 
      console.log("CSV Data:", csvData);
-
-    // Show Thank You Modal
-    const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
-    thankYouModal.show();
-
-    event.target.reset();
-    });
+            
     <!-- Dark Mode and Dyslexia Mode Script -->
         const themeToggleBtn = document.getElementById('theme-toggle');
         const dyslexiaToggleBtn = document.getElementById('dyslexia-toggle');
