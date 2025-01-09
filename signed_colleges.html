@@ -187,74 +187,52 @@
 
     <!-- JavaScript to Fetch Colleges -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const collegeList = document.getElementById('college-list');
-            const loadingSpinner = document.getElementById('loading-spinner');
-
-            // Fetch signed colleges
-            fetch('/api/signed-colleges')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Hide the loading spinner
-                    loadingSpinner.style.display = 'none';
-
-                    // Check if there are colleges
-                    if (data.length === 0) {
-                        const noCollegesItem = document.createElement('li');
-                        noCollegesItem.className = 'list-group-item text-center';
-                        noCollegesItem.textContent = 'No colleges have signed up yet.';
-                        collegeList.appendChild(noCollegesItem);
-                    } else {
-                        // Populate the college list
-                        data.forEach(college => {
-                            const collegeItem = document.createElement('li');
-                            collegeItem.className = 'list-group-item';
-                            collegeItem.textContent = college.name; // Assuming the backend returns a "name" field
-                            collegeList.appendChild(collegeItem);
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching colleges:', error);
-                    loadingSpinner.style.display = 'none';
-                    const errorItem = document.createElement('li');
-                    errorItem.className = 'list-group-item text-danger text-center';
-                    errorItem.textContent = 'Failed to load the colleges. Please try again later.';
-                    collegeList.appendChild(errorItem);
-                });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tableBody = document.querySelector('#college-table tbody');
-            const noDataMessage = document.getElementById('no-data-message');
-
-            // Fetch data from localStorage
-            const colleges = JSON.parse(localStorage.getItem('colleges')) || [];
-
-            // Filter for public colleges
-            const publicColleges = colleges.filter(college => college.publicSupport);
-
-            if (id="public-agreement"==True) {
-                // Populate table with public colleges
-                publicColleges.forEach((college, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${college.collegeName}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } else {
-                // Show "no data" message
-                noDataMessage.style.display = 'block';
-            }
-        });
+      document.addEventListener('DOMContentLoaded', function () {
+        const collegeList = document.getElementById('college-list');
+        const loadingSpinner = document.getElementById('loading-spinner');
+ 
+        // Fetch signed colleges
+        fetch('/api/signed-colleges')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide the loading spinner
+                loadingSpinner.style.display = 'none';
+ 
+                // Filter colleges that agreed to be named
+                const agreedColleges = data.filter(college => college.agreedToBeNamed);
+ 
+                if (agreedColleges.length === 0) {
+                    // Show message if no colleges agreed to be named
+                    const noCollegesItem = document.createElement('li');
+                    noCollegesItem.className = 'list-group-item text-center';
+                    noCollegesItem.textContent = 'No colleges have signed up yet or agreed to be named.';
+                    collegeList.appendChild(noCollegesItem);
+                } else {
+                    // Populate the college list with agreed colleges
+                    agreedColleges.forEach(college => {
+                        const collegeItem = document.createElement('li');
+                        collegeItem.className = 'list-group-item';
+                        collegeItem.textContent = college.name;
+                        // Assuming the backend returns a "name" field
+                        collegeList.appendChild(collegeItem);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching colleges:', error);
+                loadingSpinner.style.display = 'none';
+ 
+                const errorItem = document.createElement('li');
+                errorItem.className = 'list-group-item text-danger text-center';
+                errorItem.textContent = 'Failed to load the colleges. Please try again later.';
+                collegeList.appendChild(errorItem);
+            });
+      });
     </script>
         <!-- Dark Mode and Dyslexia Mode Script -->
     <script>
@@ -344,4 +322,4 @@
         }
     </script>
 </body>
-</html>
+</html> 
