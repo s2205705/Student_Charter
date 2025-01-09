@@ -57,7 +57,7 @@
     <div class="container mt-5">
         <h1 class="section-title">Admin Dashboard</h1>
         <button id="download-csv" class="btn btn-primary">Download Signups as CSV</button>
-        <button id="download-db" class="btn btn-primary ms-2">Download Database</button>
+        <button id="download-db" class="btn btn-primary ms-2">Download Access-Compatible SQL</button>
     </div>
 
     <!-- Footer -->
@@ -81,7 +81,7 @@
                 db = new SQL.Database();
                 db.run(`
                     CREATE TABLE IF NOT EXISTS colleges (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        id INTEGER PRIMARY KEY,
                         college_name TEXT,
                         leader_name TEXT,
                         leader_email TEXT,
@@ -126,59 +126,30 @@
             link.click();
         });
 
-        // Download Database
+        // Export Access-Compatible SQL
         document.getElementById("download-db").addEventListener("click", () => {
-            const binaryArray = db.export();
-            const blob = new Blob([binaryArray], { type: "application/octet-stream" });
+            const results = db.exec("SELECT * FROM colleges");
+
+            // Generate Access-compatible SQL commands
+            const sqlStatements = [
+                "CREATE TABLE colleges (id COUNTER PRIMARY KEY, college_name TEXT(255), leader_name TEXT(255), leader_email TEXT(255), contact_type TEXT(50), contact_value TEXT(255), supports_charter YESNO, public_support YESNO);"
+            ];
+            if (results.length > 0) {
+                const values = results[0].values.map(row =>
+                    `INSERT INTO colleges VALUES (${row.map(value => 
+                        (value === null ? "NULL" : typeof value === 'boolean' ? (value ? 1 : 0) : `'${value.replace(/'/g, "''")}'`)
+                    ).join(", ")});`
+                );
+                sqlStatements.push(...values);
+            }
+
+            const blob = new Blob([sqlStatements.join("\n")], { type: "text/plain" });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.href = url;
-            link.download = "colleges.db";
+            link.download = "colleges.sql";
             link.click();
         });
-      // Download Database as a CSV File
-document.getElementById("download-db").addEventListener("click", () => {
-    const csvRows = [];
-
-    // Get all table names from the database
-    const tableResult = db.exec(`SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';`);
-    if (!tableResult.length || !tableResult[0].values.length) {
-        return alert("No tables found in the database!");
-    }
-
-    const tableNames = tableResult[0].values.flat(); // Extract table names from query result
-
-    // Iterate through each table and export data as CSV
-    tableNames.forEach((tableName) => {
-        csvRows.push(`\n-- Table: ${tableName} --`); // Add table separator in CSV
-        const tableData = db.exec(`SELECT * FROM ${tableName};`)[0];
-
-        if (tableData) {
-            // Add headers for the table
-            const headers = tableData.columns.join(",");
-            csvRows.push(headers);
-
-            // Add rows for the table
-            tableData.values.forEach((row) => {
-                csvRows.push(row.join(","));
-            });
-        } else {
-            csvRows.push("No data found in this table.");
-        }
-    });
-
-    // Create CSV file and trigger download
-    const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "database.csv";
-    link.click();
-
-    // Clean up URL object
-    URL.revokeObjectURL(url);
-});
-
 
         // Ensure Admin is Logged In
         if (localStorage.getItem("isLoggedIn") !== "true") {
