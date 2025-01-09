@@ -304,54 +304,78 @@
     <script>
         let db;
         const csvData = [];
-
         // Initialize SQL.js
-        initSqlJs({ locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${filename}` })
-            .then(SQL => {
-                db = new SQL.Database();
-                db.run(`
-                    CREATE TABLE colleges (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        college_name TEXT,
-                        leader_name TEXT,
-                        leader_email TEXT,
-                        contact_type TEXT,
-                        contact_value TEXT,
-                        supports_charter BOOLEAN,
-                        public_support BOOLEAN
-                    );
-                `);
-            });
+initSqlJs({ locateFile: filename => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${filename}` })
+    .then(SQL => {
+        db = new SQL.Database();
+        db.run(`
+            CREATE TABLE colleges (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                college_name TEXT,
+                leader_name TEXT,
+                leader_email TEXT,
+                contact_type TEXT,
+                contact_value TEXT,
+                supports_charter BOOLEAN,
+                public_support BOOLEAN
+            );
+        `);
+        console.log("Database initialized and table created successfully.");
+    })
+    .catch(err => console.error("Error initializing SQL.js:", err));
 
-        // Handle form submission
-        document.getElementById("signup-form").addEventListener("submit", event => {
-            event.preventDefault();
+// Handle form submission
+document.getElementById("signup-form").addEventListener("submit", event => {
+    event.preventDefault();
 
-            const collegeName = document.getElementById("college-name").value;
-            const leaderName = document.getElementById("leader-name").value;
-            const leaderEmail = document.getElementById("leader-email").value;
-            const contactType = document.getElementById("contact-type").value;
-            const contactValue = document.getElementById("contact-value").value;
-            const supportsCharter = document.getElementById("agreement").checked;
-            const publicSupport = document.getElementById("public-agreement").checked;
+    const collegeName = document.getElementById("college-name").value;
+    const leaderName = document.getElementById("leader-name").value;
+    const leaderEmail = document.getElementById("leader-email").value;
+    const contactType = document.getElementById("contact-type").value;
+    const contactValue = document.getElementById("contact-value").value;
+    const supportsCharter = document.getElementById("agreement").checked;
+    const publicSupport = document.getElementById("public-agreement").checked;
 
-            // Save to SQL.js
-            db.run(`
-                INSERT INTO colleges (college_name, leader_name, leader_email, contact_type, contact_value, supports_charter, public_support)
-                VALUES (?, ?, ?, ?, ?, ?, ?);
-            `, [collegeName, leaderName, leaderEmail, contactType, contactValue, supportsCharter, publicSupport]);
+    console.log("Form data collected:", {
+        collegeName,
+        leaderName,
+        leaderEmail,
+        contactType,
+        contactValue,
+        supportsCharter,
+        publicSupport
+    });
 
-            // Add to CSV data
-            csvData.push({
-                "College Name": collegeName,
-                "Principal/Chief Executive Name": leaderName,
-                "Principal/Chief Executive Email": leaderEmail,
-                "Contact Type": contactType,
-                "Contact Value": contactValue,
-                "Supports Charter": supportsCharter,
-                "Public Support": publicSupport
-            });
+    try {
+        db.run(`
+            INSERT INTO colleges (college_name, leader_name, leader_email, contact_type, contact_value, supports_charter, public_support)
+            VALUES (?, ?, ?, ?, ?, ?, ?);
+        `, [collegeName, leaderName, leaderEmail, contactType, contactValue, supportsCharter, publicSupport]);
 
+        console.log("Data successfully inserted into the database.");
+    } catch (error) {
+        console.error("Error inserting data:", error);
+    }
+
+    // Add to CSV data
+    csvData.push({
+        "College Name": collegeName,
+        "Principal/Chief Executive Name": leaderName,
+        "Principal/Chief Executive Email": leaderEmail,
+        "Contact Type": contactType,
+        "Contact Value": contactValue,
+        "Supports Charter": supportsCharter,
+        "Public Support": publicSupport
+    });
+
+    console.log("CSV Data:", csvData);
+
+    // Show Thank You Modal
+    const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
+    thankYouModal.show();
+
+    event.target.reset();
+});
             // Show Thank You Modal
             const thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
             thankYouModal.show();
