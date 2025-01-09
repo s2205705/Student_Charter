@@ -166,29 +166,69 @@
     <!-- Title -->
     <h1 class="section-title text-center">Colleges That Signed Up</h1>
 
-    <!-- College List -->
+
+    <!-- College List Section -->
     <div class="container">
-        <table id="college-table" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>College Name</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data dynamically inserted here -->
-            </tbody>
-        </table>
-        <div id="no-data-message" class="text-center text-muted" style="display: none;">
-            No colleges have agreed to be publicly named yet.
+        <ul id="college-list" class="list-group">
+            <!-- Colleges will be dynamically inserted here -->
+        </ul>
+        <div id="loading-spinner" class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer Section -->
     <footer class="footer text-center p-4 mt-5">
         <p>&copy; 2024 Association of Colleges. All rights reserved.</p>
     </footer>
 
-    <!-- JavaScript -->
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <!-- JavaScript to Fetch Colleges -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const collegeList = document.getElementById('college-list');
+            const loadingSpinner = document.getElementById('loading-spinner');
+
+            // Fetch signed colleges
+            fetch('/api/signed-colleges')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Hide the loading spinner
+                    loadingSpinner.style.display = 'none';
+
+                    // Check if there are colleges
+                    if (data.length === 0) {
+                        const noCollegesItem = document.createElement('li');
+                        noCollegesItem.className = 'list-group-item text-center';
+                        noCollegesItem.textContent = 'No colleges have signed up yet.';
+                        collegeList.appendChild(noCollegesItem);
+                    } else {
+                        // Populate the college list
+                        data.forEach(college => {
+                            const collegeItem = document.createElement('li');
+                            collegeItem.className = 'list-group-item';
+                            collegeItem.textContent = college.name; // Assuming the backend returns a "name" field
+                            collegeList.appendChild(collegeItem);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching colleges:', error);
+                    loadingSpinner.style.display = 'none';
+                    const errorItem = document.createElement('li');
+                    errorItem.className = 'list-group-item text-danger text-center';
+                    errorItem.textContent = 'Failed to load the colleges. Please try again later.';
+                    collegeList.appendChild(errorItem);
+                });
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const tableBody = document.querySelector('#college-table tbody');
@@ -200,7 +240,7 @@
             // Filter for public colleges
             const publicColleges = colleges.filter(college => college.publicSupport);
 
-            if (publicColleges.length > 0) {
+            if (id="public-agreement"==True) {
                 // Populate table with public colleges
                 publicColleges.forEach((college, index) => {
                     const row = document.createElement('tr');
@@ -216,10 +256,7 @@
             }
         });
     </script>
-     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-
-    <!-- Dark Mode and Dyslexia Mode Script -->
+        <!-- Dark Mode and Dyslexia Mode Script -->
     <script>
         const themeToggleBtn = document.getElementById('theme-toggle');
         const dyslexiaToggleBtn = document.getElementById('dyslexia-toggle');
@@ -306,6 +343,5 @@
             localStorage.setItem('dyslexiaMode', 'false');
         }
     </script>
-</html>
 </body>
 </html>
